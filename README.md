@@ -16,6 +16,7 @@ and a single-page UI (`mvp_demo/index.html`) with per-adviser sign-in.
       bm25_encoder.json  Fitted BM25 encoder, loaded at startup
       index.html       Front end, served at /
     deploy/            EC2 deployment (systemd, nginx, TLS, DuckDNS) - see deploy/README.md
+    docs/              Handover notes: decisions, what we tried, known issues - start at docs/README.md
 
 ## Running locally
 
