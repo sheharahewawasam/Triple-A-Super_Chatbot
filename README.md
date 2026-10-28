@@ -98,7 +98,29 @@ Documents can also be uploaded through the app when `DOCUMENT_UPLOADS_ENABLED` i
 
 ## Tests
 
+### Unit tests
+
     cd mvp_demo && python manage.py test rag_api
+
+`rag_api/tests.py` covers sign-in, fund access filters, query-cache isolation between
+advisers and audit-log path safety. Run it after any change to the code, and after
+bumping a pin in `requirements.txt`.
+
+### Evaluation scripts
+
+These run against real data, so they aren't part of `manage.py test`. Run each one from
+`mvp_demo/` with `secrets.env` in place.
+
+| Script | Checks | Needs |
+|---|---|---|
+| `python eval_retrieval.py [--verbose]` | Retrieval recall: whether the fact that answers each adviser question reaches the model | The Pinecone index populated by `ingest.py` |
+| `python -u Grader.py` | End-to-end answer quality, graded by an LLM; writes `currentVersionEval.txt` | The Pinecone index, Ollama running, and `pip install ollama` |
+| `python chunk_structure_metrics.py --all-pdfs` | Chunk structure: headings found, section sizes, TOC filtering | PDFs in `../pdfs/`; reports go to `test_chunking_output/reports/` |
+| `python validate_evaluation_dataset.py` | That each excerpt in `chunk_evaluation_dataset.json` matches the extracted text exactly | `../pdfs/SIS Act -1.pdf` |
+
+Run `eval_retrieval.py` before and after any change to chunking, ingestion or
+retrieval: a chunking change can make part of the corpus unreachable while every unit
+test still passes.
 
 ## Deployment
 
