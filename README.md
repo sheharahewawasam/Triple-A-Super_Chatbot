@@ -19,18 +19,69 @@ and a single-page UI (`mvp_demo/index.html`) with per-adviser sign-in.
 
 ## Running locally
 
-    cd mvp_demo
-    python3.12 -m venv .venv && source .venv/bin/activate
+### Prerequisites
+
+- Python 3.12 or newer (Django 6.0 needs 3.12+)
+- [Ollama](https://ollama.com) installed and running (`ollama serve`)
+- A Pinecone API key and an index that has been filled by `ingest.py` (see
+  [Ingesting documents](#ingesting-documents)). The app connects to Pinecone when it
+  starts, so it won't start without a valid key.
+- About 4 GB of free RAM: the BGE embedder and reranker are loaded at startup, and
+  are downloaded from Hugging Face on the first run
+
+### 1. Install
+
+    git clone https://github.com/sheharahewawasam/Triple-A-Super_Chatbot.git
+    cd Triple-A-Super_Chatbot/mvp_demo
+    python3.12 -m venv .venv
+    source .venv/bin/activate              # Windows: .venv\Scripts\activate
+    pip install --upgrade pip
     pip install -r requirements.txt
-    cp secrets.env.template secrets.env    # fill in the Pinecone keys; DJANGO_DEBUG=True for local
-    python manage.py migrate               # creates db.sqlite3, seeds advisers and funds
-    ollama pull qwen3:1.7b                 # or set OLLAMA_MODEL
+
+On Linux without a GPU, run `pip install torch --index-url https://download.pytorch.org/whl/cpu`
+before installing the requirements, to avoid downloading the ~2.5 GB CUDA build.
+
+### 2. Configure
+
+    cp secrets.env.template secrets.env
+
+Edit `secrets.env`:
+
+    PINECONE_API_KEY=<key>
+    PINECONE_INDEX_NAME=<index>
+    DJANGO_SECRET_KEY=<any long random string>
+    DJANGO_DEBUG=True
+    DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+
+Without `DJANGO_SECRET_KEY`, settings fall back to an insecure development key.
+Always set it anywhere other than your own machine.
+
+### 3. Set up the database and model
+
+    python manage.py migrate               # creates db.sqlite3 and adds the advisers and funds
+    ollama pull qwen3:1.7b                 # or another model, set with OLLAMA_MODEL
+
+The migrations create a sign-in account for each seeded adviser. The username is the
+adviser's name in lowercase, and the placeholder password is `admin` (see
+`rag_api/migrations/0006_create_advisor_users.py`). Change these passwords before the
+app is reachable by anyone else:
+
+    python manage.py changepassword <username>
+    python manage.py createsuperuser       # admin account for /admin/
+
+### 4. Run
+
     python manage.py runserver
 
-Open http://localhost:8000.
+Open http://localhost:8000, sign in, and choose an adviser and fund to chat.
 
-Without `DJANGO_SECRET_KEY`, settings fall back to an insecure development key -
-always set it outside local development.
+### Troubleshooting
+
+- `No API key provided` / `401 Invalid API key`: `secrets.env` is missing, misnamed, or
+  has a wrong Pinecone key. It must be at `mvp_demo/secrets.env`.
+- The chat times out or errors: make sure Ollama is running and that the model is pulled
+  (`ollama list`).
+- `DisallowedHost`: add the hostname to `DJANGO_ALLOWED_HOSTS`.
 
 ## Ingesting documents
 
@@ -51,3 +102,18 @@ Documents can also be uploaded through the app when `DOCUMENT_UPLOADS_ENABLED` i
 ## Deployment
 
 See [deploy/README.md](deploy/README.md).
+
+## Contributors
+
+This project was built by the FIT4002 team. Development happened in an earlier
+repository; this repository is a cleaned-up copy prepared for handover. Its commits
+were made from one account while preparing the handover, but the work in them is the
+whole team's:
+
+- Mark
+- weihom05
+- JunHaoN
+- yxuu0194
+- Skygeneral133
+- fx7165
+- sheharahewawasam
