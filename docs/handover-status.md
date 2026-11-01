@@ -5,7 +5,7 @@ Do not substitute code preparation for account-side completion or live evidence.
 
 | Item | Status and evidence / next action |
 |---|---|
-| 1. OpenAI and Cloudflare revocation | Owner action pending. Historical credential-shaped values confirmed without displaying them. Revocation cannot be inferred from source deletion. |
+| 1. OpenAI and Cloudflare revocation | Owner action pending; Shehara deferred credential changes on 1 November 2026. Historical credential-shaped values confirmed without displaying them. Repository privacy does not invalidate previously copied keys; revocation remains required. |
 | 2. Pinecone key | No candidate in the limited configuration-blob scan. Full history/account review and rotation if exposed remain pending. Never use a historical leaked key for testing. |
 | 3. Old repo visibility | Completed: FIT-4002-CHATBOT changed to PRIVATE and verified through GitHub on 1 November 2026. Not deleted or archived; files/history preserved. Previously fetched copies cannot be recalled. |
 | 4. Adviser passwords | New installs now create unusable seed passwords. Existing databases are unchanged; rotate each account on every deployment and record completion privately. |
@@ -17,10 +17,10 @@ Do not substitute code preparation for account-side completion or live evidence.
 | 10. Dates | Restored actual calendar-date and reversed-range checks. |
 | 11. Tests | Restored original 33 tests, plus focused handover checks; see verification below. |
 | 12. Evaluation tools | Restored missing evaluation cases, OCR script and 22 fixture files (11 image/annotation pairs). Existing retrieval/chunk metrics and improved grader retained rather than overwritten with older regressions. |
-| 13. Recall | GitHub retrieval job stopped at preflight: both PINECONE_API_KEY and PINECONE_INDEX_NAME Actions secrets are missing. Local attempt also lacks Pinecone/model dependencies. Add authorised secrets for the intended populated index and rerun. Historical baseline is 8/10, not a newly measured result. |
+| 13. Recall | Rerun after Shehara reported adding secrets still stopped at preflight: both settings reached the job as empty. GitHub listed no repository Actions secrets, variables or environments in the handover repo at verification. Save PINECONE_API_KEY and PINECONE_INDEX_NAME as repository Actions secrets in Triple-A-Super_Chatbot and rerun. Historical baseline is 8/10, not a newly measured result. |
 | 14. Pinecone choice | Hybrid search/filter support documented; reason S3 Vectors/OpenSearch lost still needs team confirmation. |
 | 15. Local models | Proposal documents privacy/cost tradeoffs; final motivation/client requirement still needs confirmation. |
-| 16. HyDE / UI / Bubble | Historical implementation notes retained; motives and merge outcome need team evidence. |
+| 16. HyDE / UI / Bubble | Shehara confirmed on 1 November 2026 that Bubble UI was not shipped. HyDE removal and the user/fund UI revert still need decision evidence. |
 | 17. OCI → EC2 | Trial/shape limitation documented historically; actual decision owner/reason pending confirmation. |
 | 18. People and account owners | Client/project owner recovered as Champ Mendis from Project_26.pdf. Supervisor and AWS/DuckDNS/Pinecone owners pending. |
 | 19. Scope/delivery | Source-backed summary and implementation mapping in scope-and-delivery.md. Client acceptance not asserted. |

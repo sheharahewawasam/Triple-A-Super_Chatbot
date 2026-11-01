@@ -69,7 +69,9 @@ The feature came back in a later merge. *Team: confirm why it was reverted.*
 merged). Superseded by the `Document` model, which stores Pinecone IDs (`72e824d`).
 
 **Bubble UI** (branch `Shehara-Bubble-UI`). Only a README change is left on it.
-*Team: was the UI work merged elsewhere?*
+Shehara confirmed on 1 November 2026 that Bubble UI was **not shipped**. It must
+not be included in delivered-feature claims. The reason it was not shipped is
+not yet recorded.
 
 ## Ingestion and chunking
 

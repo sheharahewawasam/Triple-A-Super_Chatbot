@@ -34,6 +34,7 @@ summaries, suggested questions, updates, TTR questions and deed-date checks.
 | Date-aware document questions | Validated optional date bounds implemented. Unknown dates are excluded by date filters; complete latest-version detection is not established. |
 | Logs and analytics | Local audit records exist; a production analytics dashboard is not established. Transcripts must not be tracked in git. |
 | Client Django/Apex/Firecloud integration | Standalone Django API and HTML interface exist; completed integration and client acceptance require team evidence. |
+| Bubble UI | Not shipped, confirmed by Shehara on 1 November 2026. The delivered interface is the HTML/Django application. |
 | Fund balances, summaries and updates | Document-grounded questions may retrieve relevant text. No account-balance connector, proactive change monitor or complete dedicated workflow is established. |
 | Suggested questions / TTR coverage | Requires user-acceptance evidence against the intended documents; not inferred from the presence of a generic chat box. |
 
