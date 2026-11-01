@@ -1,7 +1,22 @@
 # Evaluation and benchmarks
 
-None of the evaluation scripts were carried into this repository. Get them from old
-branch `feature/account-based-access`:
+## Post-port verification — 1 November 2026
+
+[GitHub retrieval run 41273655594](https://github.com/sheharahewawasam/Triple-A-Super_Chatbot/actions/runs/41273655594)
+passed after the two repository secret names were verified. It ran
+`python eval_retrieval.py --verbose --require 8` against the authorised live index.
+Recall@5 (facts reaching model context) was **8/10**; recall@60 (facts present in
+candidates) was **8/10**. The two misses were Sample's trustee and Ausis's members;
+their expected facts were not in the top-60 candidates for the tested phrasing.
+
+This confirms the ten-case retrieval baseline after porting. It does not measure
+generated-answer correctness, prove complete corpus coverage, or establish the
+root cause of the candidate misses. No index re-ingestion was performed.
+
+## Available tools
+
+The following evaluation tools are present in this repository after the handover
+port. The improved existing grader was retained rather than replaced with its older version:
 
 | Script (old repo, `mvp_demo/`) | What it measures | Notes |
 | --- | --- | --- |

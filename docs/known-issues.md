@@ -10,7 +10,8 @@ were removed; Ollama is imported only on paths that invoke it.
 
 Evaluation cases, OCR checks and fixtures are restored. Existing retrieval,
 chunk-structure and improved grader scripts are retained. The live recall rerun
-is pending authorised Pinecone access; do not present 8/10 as a fresh result.
+passed on 1 November 2026 with recall@5=8/10 and recall@60=8/10; see
+[the evaluation record](evaluation.md).
 See [handover-status.md](handover-status.md) for incomplete security and team work.
 
 ## 2. Known limitations (unfixed in either repo)
@@ -26,9 +27,10 @@ See [handover-status.md](handover-status.md) for incomplete security and team wo
   copied placeholder, "21 January 2012". Only dates stated in filenames were kept, the
   rest are `None`, and that is why the date filter is optional. Someone with the PDFs
   open needs to fill them in (`dddcc5d`).
-- **Historical retrieval recall was 8/10** on the hand-checked facts. The harness
-  distinguishes top-5 misses from top-60 candidate misses; rerun it before assigning
-  the current root cause. No post-port live result is available yet.
+- **Post-port retrieval recall is 8/10** on ten hand-checked facts (1 November 2026).
+  Sample trustee and Ausis members facts are not in the top-60 candidates. This
+  localises the observed misses to candidate retrieval; it does not establish
+  whether extraction, chunking, index content or query matching is the root cause.
 - **Speed**: 20–35 s per uncached answer on a CPU host, and 90–230 s on the smallest VM
   tried. OCR takes 20–40 minutes for a 57-page deed (see
   [evaluation.md](evaluation.md)).

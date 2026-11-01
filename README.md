@@ -151,5 +151,6 @@ See [the task register](docs/handover-status.md), [scope and delivery](docs/scop
 The original source reference is `b269f317ca5396fedd91843ccaf012b765bddc0b`;
 OCR logging is adapted from `967d1d4`. The grader already in this branch is retained
 because it queries once per question and grades retrieved context rather than
-regressing to the older duplicated calls. Retrieval recall must be measured with
-the authorised live index; the historical 8/10 is not a new validation result.
+regressing to the older duplicated calls. The live retrieval rerun passed on
+1 November 2026 at recall@5=8/10 and recall@60=8/10; see
+[evaluation evidence](docs/evaluation.md). This does not measure generated-answer accuracy.

@@ -17,7 +17,7 @@ Do not substitute code preparation for account-side completion or live evidence.
 | 10. Dates | Restored actual calendar-date and reversed-range checks. |
 | 11. Tests | Restored original 33 tests, plus focused handover checks; see verification below. |
 | 12. Evaluation tools | Restored missing evaluation cases, OCR script and 22 fixture files (11 image/annotation pairs). Existing retrieval/chunk metrics and improved grader retained rather than overwritten with older regressions. |
-| 13. Recall | Rerun after Shehara reported adding secrets still stopped at preflight: both settings reached the job as empty. GitHub listed no repository Actions secrets, variables or environments in the handover repo at verification. Save PINECONE_API_KEY and PINECONE_INDEX_NAME as repository Actions secrets in Triple-A-Super_Chatbot and rerun. Historical baseline is 8/10, not a newly measured result. |
+| 13. Recall | Completed 1 November 2026: both secret names verified, then live GitHub evaluation passed with recall@5=8/10 and recall@60=8/10. Sample trustee and Ausis members facts are absent from the top-60 candidates. [Run evidence](https://github.com/sheharahewawasam/Triple-A-Super_Chatbot/actions/runs/41273655594). This measures retrieval, not generated-answer accuracy. |
 | 14. Pinecone choice | Hybrid search/filter support documented; reason S3 Vectors/OpenSearch lost still needs team confirmation. |
 | 15. Local models | Proposal documents privacy/cost tradeoffs; final motivation/client requirement still needs confirmation. |
 | 16. HyDE / UI / Bubble | Shehara confirmed on 1 November 2026 that Bubble UI was not shipped. HyDE removal and the user/fund UI revert still need decision evidence. |
@@ -35,9 +35,10 @@ Do not substitute code preparation for account-side completion or live evidence.
 All 37 Django tests passed (33 restored plus four focused checks), using RAG_OFFLINE=1 and the
 pinned Django 6.0.4 / DRF 3.17.1 in an isolated Python 3.14 environment. Focused
 checks also cover invalid dates, seed-password defaults and import-light OCR.
-The PR's Python 3.12 unit-test job passed on fba9e37. The live retrieval job
-failed at missing-secret preflight, before evaluation. Offline checks do not
-validate live Pinecone recall, OCR quality, production configuration or backup.
+The PR's Python 3.12 unit-test job passed on fba9e37. After the repository secrets
+were saved and verified, the live retrieval rerun passed on 1 November 2026 with
+8/10 at both top-5 context and top-60 candidates. The ten-case sample does not
+establish general answer accuracy, OCR quality, production configuration or backup.
 
 ## Human review record
 
