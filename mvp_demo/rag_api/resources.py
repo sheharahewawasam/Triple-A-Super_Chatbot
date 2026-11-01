@@ -9,9 +9,6 @@ roughly double resident memory, which matters on a small VM.
 import os
 
 from dotenv import load_dotenv
-from pinecone import Pinecone
-from pinecone_text.sparse import BM25Encoder
-from sentence_transformers import SentenceTransformer, CrossEncoder
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -47,6 +44,10 @@ if OFFLINE:
     embedder = _NotLoaded("embedder")
     reranker = _NotLoaded("reranker")
 else:
+    from pinecone import Pinecone
+    from pinecone_text.sparse import BM25Encoder
+    from sentence_transformers import SentenceTransformer, CrossEncoder
+
     pc = Pinecone(api_key=PINECONE_API_KEY)
     index = pc.Index(PINECONE_INDEX_NAME)
 

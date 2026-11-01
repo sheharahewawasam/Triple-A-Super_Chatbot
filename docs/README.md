@@ -22,3 +22,10 @@ worth reading in full when you touch the area they describe.
 
 Setup and deployment steps are in the top-level [README](../README.md) and
 [deploy/README.md](../deploy/README.md), and are not repeated here.
+
+## Current handover work
+
+- [Task register and verification](handover-status.md)
+- [Original scope and implementation mapping](scope-and-delivery.md)
+- [Source backup and restore procedure](backup-and-restore.md)
+- [Document-date verification register](document-date-register.json)

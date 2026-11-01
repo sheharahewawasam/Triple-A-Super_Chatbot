@@ -25,7 +25,6 @@ from sentence_transformers import SentenceTransformer
 from datetime import datetime
 
 
-from ocr_solution import OCR
 from chunking.extraction import (
     clean_preserve_structure, extract_text_with_tables, _table_text_is_redundant,
 )
@@ -66,9 +65,9 @@ def parse_document_date(date_str, fmt="%d %B %Y"):
     return dt.strftime("%Y-%m-%d"), int(dt.strftime("%Y%m%d"))
 
 pdfs_to_process = [
-    {"filepath": "../pdfs/Trust_Deed_Sample_Superannuation_Fund.pdf",                                                                        "fund_name": "Sample Superannuation Fund",         "doc_type": "Trust Deed",                            "date": None},
-    {"filepath": "../pdfs/deed.pdf",                                                                                                         "fund_name": "Summers Family Super Fund",          "doc_type": "Trust Deed",                            "date": None},
-    {"filepath": "../pdfs/sample-smsf-trust-deed.pdf",                                                                                       "fund_name": "Ausis Super Fund",                   "doc_type": "Trust Deed",                            "date": None},
+    {"filepath": "../pdfs/Trust_Deed_Sample_Superannuation_Fund.pdf",                                                                        "fund_name": "Sample Superannuation Fund",         "doc_type": "Trust Deed",                            "date": "09 October 2020"},
+    {"filepath": "../pdfs/deed.pdf",                                                                                                         "fund_name": "Summers Family Super Fund",          "doc_type": "Trust Deed",                            "date": "21 January 2012"},
+    {"filepath": "../pdfs/sample-smsf-trust-deed.pdf",                                                                                       "fund_name": "Ausis Super Fund",                   "doc_type": "Trust Deed",                            "date": "27 May 2022"},
     {"filepath": "../pdfs/Project_26.pdf",                                                                                                   "fund_name": "Triple A Super",                     "doc_type": "Project Brief",                         "date": None},
     {"filepath": "../pdfs/Proposal Document.pdf",                                                                                             "fund_name": "Triple A Super",                     "doc_type": "Development Proposal",                  "date": None},
     {"filepath": "../pdfs/SIS Act -1.pdf",                                                                                                   "fund_name": "General",                            "doc_type": "legal",                                 "date": None},
@@ -101,10 +100,16 @@ def extract_document_content(pdf_path, ocr=None):
     The teammate's adapter should return one page dict, a list of page dicts,
     or {"pages": [...]}. No assumed new OCR method is required.
     """
+    plain = extract_text_with_tables(pdf_path)
+    with pdfplumber.open(pdf_path) as pdf:
+        enough_text = len(plain.strip()) >= 5 * len(pdf.pages)
+    if enough_text or os.getenv("OCR_ENABLED", "true").lower() not in ("1", "true", "yes"):
+        return plain
     try:
         if ocr is None:
+            from ocr_solution import OCR
             ocr = OCR()
-        result = ocr.output_document(Path(pdf_path))
+        result = ocr.output_document(Path(pdf_path), cleanup=False)
     except Exception as exc:
         warnings.warn(f"OCR failed for {pdf_path}: {exc}; trying PDF text extraction.")
         return extract_text_with_tables(pdf_path)
@@ -158,6 +163,7 @@ def main():
 
     print("Loading OCR model...")
     try:
+        from ocr_solution import OCR
         ocr = OCR()
     except Exception as exc:
         warnings.warn(f"OCR initialization failed: {exc}; PDF extraction will be attempted.")

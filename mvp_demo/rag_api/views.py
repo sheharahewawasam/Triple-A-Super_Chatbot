@@ -11,10 +11,11 @@ import textwrap
 from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework.decorators import api_view, throttle_classes
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import UserRateThrottle
 
 from . import resources
 from .models import Advisor
+from .sources import grant_for
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,16 @@ _bm25 = resources.bm25
 _embedder = resources.embedder
 _reranker = resources.reranker
 
-class ChatbotRateThrottle(AnonRateThrottle):
+class ChatbotRateThrottle(UserRateThrottle):
+    """
+    Per-advisor rate limit on the chat endpoint.
+
+    This was AnonRateThrottle, which returns no cache key for an authenticated
+    request - DRF reads that as "do not throttle". It was correct while the API
+    was open, and became a no-op the moment sign-in was required, because every
+    caller is now authenticated. UserRateThrottle keys on the user instead, and
+    still falls back to the IP for an anonymous caller.
+    """
     scope = "chatbot"
 
 # Simple in-memory cache — repeated identical queries return instantly
@@ -132,13 +142,21 @@ def perform_vector_search(query_embedding, user_query, access_filter, top_k=40,
 
 
 def date_string_to_numeric(date_str):
-    """'2024-07-01' -> 20240701, matching the date_numeric written at ingest."""
-    if not date_str:
+    """
+    '2024-07-01' -> 20240701, matching the date_numeric written at ingest.
+
+    Parsed as a real date rather than by stripping hyphens: the old version
+    accepted '2024-13-45' and silently produced a number no document can match,
+    so a typo returned an empty answer instead of an error. A bad value now
+    raises and the caller reports it.
+    """
+    if date_str is None or (isinstance(date_str, str) and not date_str.strip()):
         return None
     try:
-        return int(str(date_str).replace("-", ""))
-    except ValueError:
-        return None
+        parsed = datetime.date.fromisoformat(str(date_str).strip())
+    except (TypeError, ValueError):
+        raise ValueError("Dates must use YYYY-MM-DD format.")
+    return int(parsed.strftime("%Y%m%d"))
 
 
 def rerank(query, chunks, top_k=5, score_threshold=0.0):
@@ -242,8 +260,14 @@ def chat_with_advisor_bot(request):
 
     acting_user = advisor.name
     funds = permitted_funds(advisor, request.data.get("funds", []))
-    date_from = date_string_to_numeric(request.data.get("date_from"))
-    date_to = date_string_to_numeric(request.data.get("date_to"))
+    try:
+        date_from = date_string_to_numeric(request.data.get("date_from"))
+        date_to = date_string_to_numeric(request.data.get("date_to"))
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    if date_from is not None and date_to is not None and date_from > date_to:
+        return JsonResponse(
+            {"error": "The start date cannot be later than the end date."}, status=400)
     if not user_query:
         return JsonResponse({"error": "Query is required"}, status=400)
 
@@ -334,7 +358,11 @@ def chat_with_advisor_bot(request):
             context_text += f"--- Source: {source_name} ({fund_name}) ---\n{chunk_text}\n\n"
             citations.append({
                 "source": source_name,
-                "fund": fund_name
+                "fund": fund_name,
+                # A signed grant, not a filename: the link works only for this
+                # advisor, so a citation cannot become a way to fetch another
+                # fund's documents by name.
+                "grant": grant_for(source_name, acting_user),
             })
 
         # print("\n=== RETRIEVED CHUNKS ===")

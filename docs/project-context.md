@@ -25,6 +25,14 @@ that holds legislation.
 
 ## People
 
+Verified from `Project_26.pdf` (pages 1–2): client and project owner **Champ Mendis**,
+Triple A Super Pty Ltd, **Champake.Mendis@tripleasuper.com.au**. This identifies the
+project contact, not ownership of any cloud account.
+
+The proposal names Mark Shim, Shehara Hewawasam, Yiyou (Fred) Xu, Weihom Tan and
+Jun Ng as its authors. Their present account-access responsibilities and the unit
+supervisor still need confirmation.
+
 **TODO**:
 - Client contacts at Triple A Super and what each person decides
 - Unit supervisor and teaching team
@@ -33,6 +41,10 @@ that holds legislation.
   Pinecone account, and who to ask for access
 
 ## Original scope and status
+
+See [scope-and-delivery.md](scope-and-delivery.md) for a source-backed comparison of
+the initial S3/MongoDB/Apex proposal with the standalone Django/Pinecone delivery.
+Implementation is distinguished from client acceptance and unverified integrations.
 
 **TODO**: summarise `Project_26.pdf` and `Proposal Document.pdf`, which are in the old
 repo root (first commit). Note which requirements were delivered, partly delivered or

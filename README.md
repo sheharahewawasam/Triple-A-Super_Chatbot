@@ -62,13 +62,15 @@ Always set it anywhere other than your own machine.
     python manage.py migrate               # creates db.sqlite3 and adds the advisers and funds
     ollama pull qwen3:1.7b                 # or another model, set with OLLAMA_MODEL
 
-The migrations create a sign-in account for each seeded adviser. The username is the
-adviser's name in lowercase, and the placeholder password is `admin` (see
-`rag_api/migrations/0006_create_advisor_users.py`). Change these passwords before the
-app is reachable by anyone else:
+The migrations create adviser accounts with unusable passwords on new installs.
+Provision a unique password for every account before sign-in:
 
     python manage.py changepassword <username>
-    python manage.py createsuperuser       # admin account for /admin/
+    python manage.py createsuperuser
+
+Existing databases that previously used the shared placeholder are not rotated by
+this source change. Rotate passwords on **each** deployment and record completion
+in [the security handover checklist](docs/handover-status.md).
 
 ### 4. Run
 
@@ -93,6 +95,7 @@ need PaddleOCR:
 
     python -m pip install paddlepaddle==3.3.0 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
     python -m pip install "paddleocr[all]"
+    python -m pip install pymupdf ollama
 
 Documents can also be uploaded through the app when `DOCUMENT_UPLOADS_ENABLED` is set.
 
@@ -140,3 +143,13 @@ whole team's:
 - Skygeneral133
 - fx7165
 - sheharahewawasam
+
+## Handover status and verification
+
+See [the task register](docs/handover-status.md), [scope and delivery](docs/scope-and-delivery.md),
+[document dates](docs/document-date-register.json) and [backup procedure](docs/backup-and-restore.md).
+The original source reference is `b269f317ca5396fedd91843ccaf012b765bddc0b`;
+OCR logging is adapted from `967d1d4`. The grader already in this branch is retained
+because it queries once per question and grades retrieved context rather than
+regressing to the older duplicated calls. Retrieval recall must be measured with
+the authorised live index; the historical 8/10 is not a new validation result.

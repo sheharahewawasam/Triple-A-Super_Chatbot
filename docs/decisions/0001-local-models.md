@@ -21,6 +21,12 @@ Ollama.
 The reasoning was not written down at the time. The team's understanding is that it was
 data confidentiality and cost. *Team: confirm.*
 
+Evidence recovered on 1 November 2026: section 9 of the proposal compares local
+control/no per-call API charges with OpenAI's external processing/privacy concerns
+and continuous API costs. These were documented tradeoffs, but do not independently
+confirm the final decision motive or a client-imposed requirement. See
+[scope and delivery](../scope-and-delivery.md).
+
 ## Consequences
 - About 4 GB of RAM at startup, a first-run download from Hugging Face, and 20–35 s per
   answer on CPU.

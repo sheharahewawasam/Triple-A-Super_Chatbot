@@ -16,8 +16,9 @@ Both were untracked on 14 Sep (`dfbe7d0`), but they remain in history on 17 bran
 - `cloudflare_demo/.wrangler/` (local Wrangler state, including an account file) was
   also committed.
 
-This repository was built from clean files, and `git ls-files` shows only
-`secrets.env.template`.
+The current source excludes runtime secrets. Previously tracked audit transcripts
+were removed from the current tree in this handover update, but remain in earlier
+commits. Restrict access and handle historical data separately; no history was rewritten.
 
 ## What must never be committed
 
@@ -56,7 +57,7 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
   `{}` filter queries Pinecone with no filter and exposes every document (tested).
 - The answer cache key includes the asker and their fund scope (`55973e2`).
 - Citation downloads must use the signed per-advisor grant from `7c39817`, not a
-  filename route. That fix is currently missing here; see
+  filename route. That fix has been restored; see
   [known-issues.md](known-issues.md).
 - The audit log path is keyed by the advisor's primary key, with a containment check.
   It once allowed path traversal (`1f44082`).
@@ -65,7 +66,7 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
 
 ## Deployment security notes
 
-- Placeholder password `admin` on every seeded account. Change it per account.
+- New seed accounts have unusable passwords until individually provisioned. Rotate shared placeholder passwords on all existing deployments; the source change does not rotate them.
 - Set `DJANGO_SECURE_COOKIES=true` only once TLS is in place. Set
   `DJANGO_TRUST_PROXY_PROTO=true` only while gunicorn binds to `127.0.0.1` behind
   nginx.
@@ -76,3 +77,12 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
   leak to the client (`bc9d428`).
 - `.gitattributes` forces LF line endings. A CRLF `secrets.env` caused a hard-to-trace
   failure. Scripts committed from Windows lost their executable bit (`063bbc3`).
+
+## Verification on 1 November 2026
+
+A heuristic scan of credential-related blobs in fetched original histories confirmed
+OpenAI- and Cloudflare-shaped values without printing them. No Pinecone key
+candidate was found in that limited scan; this is not proof that none was ever
+committed. Account-side revocation and repository privacy remain unverified until
+the owner completes them. Archiving alone leaves public history readable; prefer
+making the old repository private before archiving. No repository is deleted.

@@ -20,6 +20,12 @@ expiry, client preference?).*
 - Port 80 redirects to HTTPS unconditionally.
 
 ## Consequences
+
+Source update, 1 November 2026: `deploy/chatbot.service` now binds to loopback to
+match this design. This does not change the installed VM unit: the operator must
+apply it and verify listener/firewall/nginx configuration before marking production
+isolation complete. Instance ID, region, shape and effective runtime remain pending
+owner confirmation; historical memory figures are not a current inventory.
 - A single host with no redundancy. A stop/start changes the IP until DuckDNS updates.
 - `DJANGO_TRUST_PROXY_PROTO` is safe only while nginx is the only thing that can reach
   gunicorn.

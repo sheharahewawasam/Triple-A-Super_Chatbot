@@ -1,53 +1,17 @@
 # Known issues, tech debt and next steps
 
-## 1. This repository is behind the old repository
+## 1. Port status (1 November 2026)
 
-This copy was assembled from different points in the old repository's history, and
-several fixes made later are not in it. Comparing files with the old repo shows:
+The handover branch now restores authenticated chat throttling, signed citation
+grants and source serving, single answer rendering, enabled-by-default uploads,
+strict date validation, the 33 original regression tests, the OCR confidence/VLM
+rewrite and environment flags, and OCR page/timing logs. Unused Chonkie imports
+were removed; Ollama is imported only on paths that invoke it.
 
-| Area in this repo | Matches old commit | Missing from this repo |
-| --- | --- | --- |
-| `rag_api/views.py` | `a52c198` (23 Sep, sign-in added) | Everything after it in that file, listed below |
-| `ocr_solution.py` | old `main` (before 22 Sep) | The OCR rewrite and the import fix |
-| `config/settings.py`, `deploy/*.sh`, `deploy/nginx-chatbot.conf` | latest (`feature/account-based-access`) | Nothing |
-
-Fixes that exist in the old repo but **not here**, most important first:
-
-1. **The chat rate limit does nothing** (`462cee2`). `ChatbotRateThrottle` subclasses
-   `AnonRateThrottle`, which never throttles authenticated requests, and sign-in makes
-   every request authenticated. 14 rapid requests produced no 429. Fix: subclass
-   `UserRateThrottle`. See [views.py:28](../mvp_demo/rag_api/views.py#L28).
-2. **Citation links return 404** (`7c39817`). The front end links to `../<file>.pdf`,
-   and Django has no route for that ([index.html:482](../mvp_demo/index.html#L482)). The
-   old repo added `rag_api/sources.py` and `/api/source/`, which serve a PDF only
-   against a signed, expiring grant tied to the asking advisor, so a filename cannot be
-   used to fetch another fund's deed. Bring back that design. Do not replace it with a
-   plain filename route. In the same commit: each answer was rendered twice in the
-   bubble.
-3. **Uploads are off by default** (`7655e3b`). `DOCUMENT_UPLOADS_ENABLED` defaults to
-   `false` here. It was turned off while the advisor's identity came from the request
-   body. Sign-in now supplies the identity, so the old repo turned the default back on.
-4. **OCR cannot be imported** (`a68e328`). `ocr_solution.py` imports `chonkie`, `ollama`
-   and `langchain_text_splitters` at module level but never uses them. Without those
-   packages, ingestion silently falls back to pdfplumber. It also builds a
-   `SemanticChunker` and then throws its output away.
-5. **The OCR rewrite and the `OCR_ENABLED` flag are missing** (`c3d288f`, `0efdf4a`,
-   `714f23d`, `4bcdec8`). These add PaddleOCR with a confidence check and a vision-model
-   fallback, make OCR run only when the text layer is thin, read the model names from
-   environment variables (`OLLAMA_VLM_MODEL`, `OLLAMA_CLEANUP_MODEL`), and add a flag to
-   turn OCR off on the VM (see [ADR 0006](decisions/0006-ocr.md)).
-6. **Date filter validation is loose** (`c3d288f`). An input like `2024-13-45` silently
-   becomes a number no document matches, when it should return a 400. A reversed date
-   range is not rejected on the server.
-7. **Tests**: the old branch had more tests in `rag_api/tests.py` (33 at its last run)
-   than this copy has (25).
-8. **Evaluation tools left out**: `eval_retrieval.py`, `evaluation_cases.py`,
-   `Grader.py`, `chunk_structure_metrics.py`, `ocr_test.py` and its fixtures. See
-   [evaluation.md](evaluation.md).
-
-**Suggested next step:** port items 1–6 from old branch `feature/account-based-access`
-before doing anything else. `weihom-layout-aware-chunking` also has OCR logging added
-after that (`967d1d4`).
+Evaluation cases, OCR checks and fixtures are restored. Existing retrieval,
+chunk-structure and improved grader scripts are retained. The live recall rerun
+is pending authorised Pinecone access; do not present 8/10 as a fresh result.
+See [handover-status.md](handover-status.md) for incomplete security and team work.
 
 ## 2. Known limitations (unfixed in either repo)
 
@@ -62,8 +26,9 @@ after that (`967d1d4`).
   copied placeholder, "21 January 2012". Only dates stated in filenames were kept, the
   rest are `None`, and that is why the date filter is optional. Someone with the PDFs
   open needs to fill them in (`dddcc5d`).
-- **Retrieval recall was 8/10** on the hand-checked facts. The remaining misses are
-  ranking problems, not missing content.
+- **Historical retrieval recall was 8/10** on the hand-checked facts. The harness
+  distinguishes top-5 misses from top-60 candidate misses; rerun it before assigning
+  the current root cause. No post-port live result is available yet.
 - **Speed**: 20–35 s per uncached answer on a CPU host, and 90–230 s on the smallest VM
   tried. OCR takes 20–40 minutes for a 57-page deed (see
   [evaluation.md](evaluation.md)).
@@ -82,7 +47,7 @@ after that (`967d1d4`).
 - The ~1500-character cap on each chunk and `num_ctx=8192` are tuned together. Change
   them together.
 - `users.py` still exists alongside the database-backed `Advisor` and `Fund` models.
-- Every account is created with the placeholder password `admin`.
+- New installations create unusable passwords pending explicit provisioning. Existing deployments still require password rotation.
 - The OCI deployment files (Terraform, `mvp_demo/chatbot.service` on the old branches)
   were not carried over. EC2 is the only documented deployment.
 

@@ -4,13 +4,10 @@ Give every existing advisor a sign-in account.
 The advisors predate authentication, so they exist as bare names with no way to
 log in. This creates one auth User per Advisor and links them.
 
-Every account is created with the same placeholder password, which the project
-chose deliberately so the team can sign in while this is still being built. It
-is a placeholder, not a credential: anyone who can reach the server knows it, so
-until each account has its own password this login keeps out a passer-by and
-nobody else. Change them in the Django admin, or with
-
-    python manage.py changepassword <username>
+New accounts have unusable passwords until an administrator provisions a unique
+password with python manage.py changepassword <username>. Existing databases
+where this migration already ran are unchanged: rotate any shared placeholder
+password separately on every deployment. Never put replacement passwords in git.
 
 New advisors added later get an account the same way - through the admin - not
 through this migration.
@@ -18,16 +15,13 @@ through this migration.
 from django.contrib.auth.hashers import make_password
 from django.db import migrations
 
-PLACEHOLDER_PASSWORD = "admin"
-
-
 def create_users(apps, schema_editor):
     Advisor = apps.get_model("rag_api", "Advisor")
     User = apps.get_model("auth", "User")
 
-    # Hash once: each call runs the full PBKDF2 work factor, and this is the
-    # same password for every row anyway.
-    hashed = make_password(PLACEHOLDER_PASSWORD)
+    # New installations must explicitly provision a unique password per adviser.
+    # This does not rotate passwords on databases where this migration already ran.
+    hashed = make_password(None)
 
     for advisor in Advisor.objects.filter(user__isnull=True):
         # Usernames are lowercased so signing in is not case-sensitive, while
