@@ -7,7 +7,7 @@ Do not substitute code preparation for account-side completion or live evidence.
 |---|---|
 | 1. OpenAI and Cloudflare revocation | Owner action pending. Historical credential-shaped values confirmed without displaying them. Revocation cannot be inferred from source deletion. |
 | 2. Pinecone key | No candidate in the limited configuration-blob scan. Full history/account review and rotation if exposed remain pending. Never use a historical leaked key for testing. |
-| 3. Old repo visibility | Owner sign-in required. Prefer private, optionally archive afterward; archive alone leaves history public. Do not delete. |
+| 3. Old repo visibility | Completed: FIT-4002-CHATBOT changed to PRIVATE and verified through GitHub on 1 November 2026. Not deleted or archived; files/history preserved. Previously fetched copies cannot be recalled. |
 | 4. Adviser passwords | New installs now create unusable seed passwords. Existing databases are unchanged; rotate each account on every deployment and record completion privately. |
 | 5. Chat throttling | Restored `UserRateThrottle` and original regression check. |
 | 6. Citations / duplicate answers | Restored signed grants, route, source module and one-time frontend rendering. |
@@ -17,7 +17,7 @@ Do not substitute code preparation for account-side completion or live evidence.
 | 10. Dates | Restored actual calendar-date and reversed-range checks. |
 | 11. Tests | Restored original 33 tests, plus focused handover checks; see verification below. |
 | 12. Evaluation tools | Restored missing evaluation cases, OCR script and 22 fixture files (11 image/annotation pairs). Existing retrieval/chunk metrics and improved grader retained rather than overwritten with older regressions. |
-| 13. Recall | Live rerun blocked on authorised Pinecone credentials, intended populated index and local BGE dependencies/models. Historical baseline is 8/10, not a newly measured result. |
+| 13. Recall | GitHub retrieval job stopped at preflight: both PINECONE_API_KEY and PINECONE_INDEX_NAME Actions secrets are missing. Local attempt also lacks Pinecone/model dependencies. Add authorised secrets for the intended populated index and rerun. Historical baseline is 8/10, not a newly measured result. |
 | 14. Pinecone choice | Hybrid search/filter support documented; reason S3 Vectors/OpenSearch lost still needs team confirmation. |
 | 15. Local models | Proposal documents privacy/cost tradeoffs; final motivation/client requirement still needs confirmation. |
 | 16. HyDE / UI / Bubble | Historical implementation notes retained; motives and merge outcome need team evidence. |
@@ -27,15 +27,16 @@ Do not substitute code preparation for account-side completion or live evidence.
 | 20. Infrastructure identifiers | Instance ID/region and actual Pinecone index/plan need owner confirmation; code defaults are not production evidence. |
 | 21. Document dates | Three sample dates checked against source deed text and applied; remaining originals require review. Existing filename-derived dates marked for confirmation. Index metadata not changed. |
 | 22. PDF backup | Procedure in backup-and-restore.md; destination, execution and next-team restore/access test still pending. |
-| 23. Review / commit | Changes reviewed locally; final commit identifier is supplied by Git history/PR rather than predicted here. |
-| 24. PR | Target is handover/fit-4002-chatbot → main. Keep unmerged while security and team evidence remain incomplete. |
+| 23. Review / commit | Implementation/docs reviewed and committed in fba9e37, pushed to handover/fit-4002-chatbot; this follow-up records verified account and CI outcomes. |
+| 24. PR | [Draft PR #1](https://github.com/sheharahewawasam/Triple-A-Super_Chatbot/pull/1), handover/fit-4002-chatbot → main. Keep unmerged while security and team evidence remain incomplete. |
 
 ## Verification
 
 All 37 Django tests passed (33 restored plus four focused checks), using RAG_OFFLINE=1 and the
 pinned Django 6.0.4 / DRF 3.17.1 in an isolated Python 3.14 environment. Focused
 checks also cover invalid dates, seed-password defaults and import-light OCR.
-CI uses Python 3.12; its result must be checked separately. Offline checks do not
+The PR's Python 3.12 unit-test job passed on fba9e37. The live retrieval job
+failed at missing-secret preflight, before evaluation. Offline checks do not
 validate live Pinecone recall, OCR quality, production configuration or backup.
 
 ## Human review record

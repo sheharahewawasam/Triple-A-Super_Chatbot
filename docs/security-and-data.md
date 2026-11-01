@@ -2,7 +2,7 @@
 
 ## Leaked credentials in the old repository — action required
 
-The old repository is **public** and has tracked `mvp_demo/.env` since its first commit
+The old repository was **public** and tracked `mvp_demo/.env` from its first commit
 (`864bc9a`). `mvp_demo/.env.template` contained real values as well. Together they
 exposed an **OpenAI API key** (`sk-proj…`) and a **Cloudflare API token** (`cfut_…`).
 Both were untracked on 14 Sep (`dfbe7d0`), but they remain in history on 17 branches.
@@ -83,6 +83,8 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
 A heuristic scan of credential-related blobs in fetched original histories confirmed
 OpenAI- and Cloudflare-shaped values without printing them. No Pinecone key
 candidate was found in that limited scan; this is not proof that none was ever
-committed. Account-side revocation and repository privacy remain unverified until
-the owner completes them. Archiving alone leaves public history readable; prefer
-making the old repository private before archiving. No repository is deleted.
+committed. Account-side revocation remains unverified until the owner completes it.
+The old repository was made PRIVATE and verified through GitHub on 1 November 2026;
+its files and history are preserved. Archiving alone would leave public history
+readable. No repository was deleted; previously downloaded copies remain outside
+the visibility change's control.
