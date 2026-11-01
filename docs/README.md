@@ -2,17 +2,17 @@
 
 This repository is a cleaned-up copy of the team's working repository,
 <https://github.com/sheharahewawasam/FIT-4002-CHATBOT>, which holds about 140 commits
-across 18 branches from April to October 2026. The history was not carried over. These
+across 18 branches from April to October 2026. The original history was not carried over; subsequent handover commits are recorded here. These
 documents record what that history would have told you: what was tried, what was
 decided, and why.
 
-Commit hashes quoted in these documents (for example `55973e2`) refer to that old
-repository, not this one. Many of its commit messages are detailed write-ups and are
+Historical commit hashes (for example `55973e2`) refer to the old repository.
+Handover commits, including `fba9e37`, refer to this repository. Many of its commit messages are detailed write-ups and are
 worth reading in full when you touch the area they describe.
 
 | Document | Read it when |
 | --- | --- |
-| [known-issues.md](known-issues.md) | **First.** Lists fixes from the old repo that this copy is missing, plus open bugs and tech debt |
+| [known-issues.md](known-issues.md) | Current port status, remaining limitations and tech debt |
 | [decisions/](decisions/) | You want to change a core part of the design (vector store, models, chunking, OCR, auth, hosting) |
 | [tried-and-abandoned.md](tried-and-abandoned.md) | You have an idea and want to know whether we already tried it |
 | [evaluation.md](evaluation.md) | You change chunking, ingestion, retrieval or the prompt and need to measure the effect |

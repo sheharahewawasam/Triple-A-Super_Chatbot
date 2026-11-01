@@ -19,7 +19,8 @@ cross-encoder run in-process, loaded once in `rag_api/resources.py`. Answers com
 Ollama.
 
 The reasoning was not written down at the time. The team's understanding is that it was
-data confidentiality and cost. *Team: confirm.*
+data confidentiality and cost. The final motive/client requirement is still
+awaiting team confirmation in [the handover register](../handover-status.md).
 
 Evidence recovered on 1 November 2026: section 9 of the proposal compares local
 control/no per-call API charges with OpenAI's external processing/privacy concerns

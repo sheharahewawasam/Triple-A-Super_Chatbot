@@ -36,8 +36,9 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
 
 ## Access model (keep these properties)
 
-- Every endpoint requires authentication by default (DRF). Only the endpoints in
-  `rag_api/auth.py` allow anonymous callers.
+- DRF API endpoints require authentication by default. The login and session-status
+  endpoints explicitly allow anonymous callers; logout requires authentication.
+  The public HTML sign-in page itself is served by Django outside that API policy.
 - A user's fund scope is worked out on the server and never taken from the request.
   `permitted_funds()` intersects what was asked for with what the advisor was granted.
   Asking for a fund the advisor doesn't hold returns nothing, not an error, so funds

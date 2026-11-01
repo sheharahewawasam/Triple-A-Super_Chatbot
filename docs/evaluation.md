@@ -18,18 +18,20 @@ root cause of the candidate misses. No index re-ingestion was performed.
 The following evaluation tools are present in this repository after the handover
 port. The improved existing grader was retained rather than replaced with its older version:
 
-| Script (old repo, `mvp_demo/`) | What it measures | Notes |
+| Script (this repo, `mvp_demo/`) | What it measures | Notes |
 | --- | --- | --- |
 | `eval_retrieval.py` | Retrieval recall: does the chunk holding the answer reach the model? | 10 questions whose answers were read by hand from the PDFs. Needs live Pinecone and the BGE models, so it is a script, not a Django test. **Run it before and after any chunking, ingestion or retrieval change.** |
-| `evaluation_cases.py` + `validate_evaluation_dataset.py` | Question/ground-truth dataset by fund, category and clause | Used by the grader |
-| `Grader.py` | Answer quality: an Ollama judge scores correctness, groundedness and relevance from 0 to 10, and records response time | Copies the RAG logic from `views.py`, so re-copy it before each run. Results are in `currentVersionEval.txt` |
+| `evaluation_cases.py` | Additional question/ground-truth examples by fund, category and clause | Reference data; the current grader uses its own QUESTIONS/SAMPLES arrays |
+| `validate_evaluation_dataset.py` | Checks excerpts in chunk_evaluation_dataset.json against extracted SIS Act text | Separate chunk-evaluation dataset; requires the source PDF |
+| `Grader.py` | Answer quality: an Ollama judge scores correctness, groundedness and relevance from 1 to 10, and records response time | Calls the separate `views.rag_logic` path once per question and reuses its result across metrics. That path can drift from production; review parity before interpreting scores. Writes `currentVersionEval.txt` |
 | `chunk_structure_metrics.py` | Chunk-structure statistics per document | Results were written to `output.txt` |
 | `ocr_test.py` + `testing/` fixtures | OCR accuracy against `.png`/`.json` ground-truth pairs | Needs PaddleOCR |
 
-The 25-question set the client supplied is `RAG Questions.pdf`, run against the
-TestData funds with the `TestAdvisor` account (migration `0003`). It is not in git.
+The historical 25-question client set is `RAG Questions.pdf` in the private original
+repository; it is absent from this handover tree. Historical runs used TestData
+funds and TestAdvisor (migration `0003`). Obtain authorised copies separately.
 
-## Results recorded so far
+## Recorded results (historical unless dated 1 November 2026)
 
 **Retrieval recall@5 (10 hand-checked facts)**
 
@@ -38,6 +40,7 @@ TestData funds with the `TestAdvisor` account (migration `0003`). It is not in g
 | before `55973e2` | aggressive TOC filter, 1,970 vectors | 5/10 |
 | `55973e2` | TOC filter fixed, 4,107 vectors | 7/10 |
 | `dddcc5d` | after the chunking-package merge | 8/10 |
+| 1 Nov 2026 | post-port live GitHub evaluation | 8/10 (top-5 and top-60) |
 
 **Latency (chat endpoint, CPU only)**
 

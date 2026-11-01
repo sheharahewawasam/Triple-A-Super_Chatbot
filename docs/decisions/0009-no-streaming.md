@@ -3,7 +3,8 @@
 **Status:** Accepted (`c221666` added streaming, `19da90f` removed it)
 
 ## Context
-Answers take 20–230 s depending on the host. Streaming the answer as newline-delimited
+Historical timings were 20–230 s depending on the host; current latency needs a
+timed deployment check. Streaming the answer as newline-delimited
 JSON (citations, then tokens, then a terminator) was built and worked.
 
 ## Decision

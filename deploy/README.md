@@ -1,7 +1,10 @@
 # Deploying to the client EC2 VM
 
-The exact steps used for the running deployment on Amazon Linux 2023
-(`ec2-user@13.239.30.166`).
+Deployment procedure for Amazon Linux 2023, reviewed 1 November 2026.
+The public HTTPS sign-in page and authenticated dashboard were observed; installed
+units, instance inventory, network controls and renewal jobs were not inspected.
+Use the operator-confirmed hostname instead of historical IP addresses.
+See [handover status](../docs/handover-status.md) for unverified operational facts.
 
 Layout on the VM:
 
@@ -54,8 +57,13 @@ rather than answering on any hostname.
     cd /opt/chatbot/app/mvp_demo
     /opt/chatbot/.venv/bin/python manage.py migrate
 
-Migrations create the schema and seed the advisers and funds. `db.sqlite3` is
-not in the repository - it is created here.
+Migrations create the schema and seed advisers/funds. New adviser accounts have
+unusable passwords until individually provisioned:
+
+    /opt/chatbot/.venv/bin/python manage.py changepassword <username>
+
+Existing migrated databases are unchanged: update each account separately.
+The SQLite file is created locally and must be included in a coordinated backup.
 
 ## 6. Service
 
@@ -66,39 +74,43 @@ not in the repository - it is created here.
 
 Check with `systemctl status chatbot` and `journalctl -u chatbot -n 50`.
 
-## 7. Language model (not yet installed)
+## 7. Language model
 
-Ollama needs roughly 2.9GB (1.4GB runtime plus 1.4GB for `qwen3:1.7b`) and the
-instance does not currently have room. Until then `/api/chat/` returns a
-connection error while every other endpoint works.
+Install/start Ollama and pull the configured answer model. Check available RAM,
+disk and actual runtime versions on the target host; old capacity notes do not
+establish current installation status. Chat requires model inference even when
+sign-in and other endpoints are working.
 
     curl -fsSL https://ollama.com/install.sh | sh
     ollama pull qwen3:1.7b
 
-## Reaching it
+## Source PDFs and access
 
-Inbound 8000 is not open in the security group. Until it is, tunnel:
+Place authorised source PDFs outside the checkout, normally in
+`/opt/chatbot/documents`, and set `SOURCE_DOCUMENT_DIRS` accordingly. The application
+serves citations through signed grants at `/api/source/`; a working link requires
+the corresponding local PDF. Never expose the source directory as public static files.
+Use [backup and restore](../docs/backup-and-restore.md) before replacing a host.
 
-    ssh -i <key>.pem -N -L 8080:localhost:8000 ec2-user@13.239.30.166
+Use the configured HTTPS hostname, normally `triple-a-chatbot.duckdns.org`.
+For authorised diagnostics through SSH, forward to the loopback application port:
 
-then open http://localhost:8080.
+    ssh -i <key>.pem -N -L 8080:localhost:8000 ec2-user@<host>
 
-## Known constraints on this instance
-
-t2.medium: 2 vCPU, 3.8GB RAM, no swap, 8GB disk.
-
-- One Gunicorn worker only. Each worker loads its own copy of the embedder and
-  reranker (~1.6GB), so a second will not fit.
-- A query takes 20-25s, so real throughput is 2-3 per minute while the throttle
-  allows 10/min. Concurrent users queue behind each other.
-- `/var/log/chatbot-*.log` and `audit_logs/` have no rotation yet.
+Then open http://localhost:8080. Do not open port 8000 publicly to make this work.
+The committed service uses one Gunicorn worker and binds to `127.0.0.1:8000`;
+confirm the effective installed unit and firewall rules. Each process loads its
+own model resources. Capacity and latency must be measured on the actual host;
+see [evaluation](../docs/evaluation.md) for dated results. Log rotation and backup
+execution still require operator confirmation.
 
 ## 8. TLS
 
-nginx already terminates TLS on 443 with a self-signed certificate, so traffic
-is encrypted but no browser trusts it. Making it trusted needs a hostname:
-Let's Encrypt will not issue for a bare IP, and `*.amazonaws.com` is on the
-Public Suffix List, so the instance's own DNS name is not usable either.
+Use a hostname and a valid certificate for browser access. The public HTTPS page
+loaded without a certificate warning during the 1 November check; that does not
+verify certificate renewal. The steps below configure or rebuild TLS rather than
+describe an unfinished current installation. Use a client-controlled hostname or
+the established DuckDNS name accepted by the certificate automation.
 
 ### 8a. A name that resolves here
 
@@ -114,7 +126,37 @@ a stale record breaks both the site and certificate renewal:
     printf 'DUCKDNS_DOMAIN=yourname\nDUCKDNS_TOKEN=your-token\n' > /opt/chatbot/duckdns.env
     chmod 600 /opt/chatbot/duckdns.env
     /opt/chatbot/duckdns-update.sh && echo updated
-    ( crontab -l 2>/dev/null; echo '*/5 * * * * /opt/chatbot/duckdns-update.sh' ) | crontab -
+    sudo systemctl edit --force --full chatbot-duckdns.service
+
+Use this unit (the protected environment file supplies the token):
+
+    [Unit]
+    Description=Refresh chatbot DuckDNS address
+    [Service]
+    Type=oneshot
+    User=ec2-user
+    EnvironmentFile=/opt/chatbot/duckdns.env
+    ExecStart=/opt/chatbot/duckdns-update.sh
+
+Create `chatbot-duckdns.timer` with `sudo systemctl edit --force --full chatbot-duckdns.timer`:
+
+    [Unit]
+    Description=Refresh chatbot DuckDNS periodically
+    [Timer]
+    OnBootSec=1min
+    OnUnitActiveSec=5min
+    [Install]
+    WantedBy=timers.target
+
+Then enable it and inspect the result:
+
+    sudo touch /var/log/duckdns.log
+    sudo chown ec2-user:ec2-user /var/log/duckdns.log
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now chatbot-duckdns.timer
+    systemctl list-timers chatbot-duckdns.timer
+
+This is a proposed setup procedure; the installed refresh schedule has not been verified.
 
 `DUCKDNS_DOMAIN` is the subdomain only - `yourname`, not `yourname.duckdns.org`.
 
@@ -142,8 +184,9 @@ CSRF error over HTTPS while working perfectly over HTTP. Four variables in
     DJANGO_SECURE_COOKIES=true                 # session/CSRF cookies HTTPS-only
     DJANGO_ALLOWED_HOSTS=...,<host>            # the new name
 
-`DJANGO_TRUST_PROXY_PROTO` is only safe because nothing but nginx can reach
-gunicorn: it binds 127.0.0.1 and 8000 is closed at the security group. If
+`DJANGO_TRUST_PROXY_PROTO` is safe only when network isolation ensures that only
+nginx can reach Gunicorn. The source template binds to loopback; verify the
+effective installed unit and security-group rules. If
 gunicorn were ever exposed directly, a client could send the header itself and
 claim to be secure.
 
@@ -157,8 +200,7 @@ Host header matches the certificate. That same block is also the default server
 for port 80, so a request to `http://<ip>/` fell straight through it and was
 served unencrypted - the whole application, sign-in included. The port 80 block
 here redirects unconditionally instead. Renewal is unaffected: Let's Encrypt
-follows redirects when fetching the HTTP-01 challenge, which `certbot renew
---dry-run` confirms.
+follows redirects when fetching the HTTP-01 challenge, which should be checked with `certbot renew --dry-run` on the target host.
 
 ### 8e. Verifying
 
@@ -180,7 +222,7 @@ Three workflows in `.github/workflows/`:
 
 | Workflow | Runs on | What it checks |
 |---|---|---|
-| `tests.yml` | every push, every PR to `main` | `manage.py check`, no missing migrations, the unit tests in `rag_api/tests.py` |
+| `tests.yml` | pushes except main; PRs into main; reusable call from deploy workflow | system checks, migration consistency, all 37 rag_api tests |
 | `retrieval.yml` | PRs to `main` that touch chunking or retrieval; or by hand | `eval_retrieval.py` against live Pinecone: fails below 8/10 |
 | `deploy.yml` | every push to `main`; or by hand | the unit tests, then deploys to this VM |
 
@@ -198,7 +240,8 @@ Settings > Secrets and variables > Actions.
 
 ### 9b. Deployment
 
-Off until switched on. `deploy/remote-deploy.sh` is piped to the VM over SSH. It
+The deploy job is gated by `DEPLOY_ENABLED=true`; current enablement and
+production-environment approvals remain unverified. `deploy/remote-deploy.sh` is piped to the VM over SSH. It
 refuses if tracked files on the VM have been edited by hand. Otherwise it checks
 out the exact commit that was tested, runs `pip install -r` and `migrate`,
 restarts `chatbot`, and waits up to 5 minutes for `/api/auth/me/` to answer. If
@@ -230,8 +273,8 @@ migrations are not rolled back.
 
 5. **Port 22 must be reachable from GitHub's runners.** Their addresses change
    with every run. If the security group only allows SSH from your own IP, the
-   deploy step times out at "Deploy". Either open 22 (the server accepts keys
-   only, no passwords) or use a self-hosted runner.
+   deploy step times out at "Deploy". Use an approved runner-access rule
+   or a suitably restricted self-hosted runner. Confirm the chosen network policy with the account owner.
 
 Changes to `deploy/chatbot.service` or the nginx config are not applied
 automatically; install those by hand as in sections 6 and 8.

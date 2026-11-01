@@ -7,15 +7,16 @@ first. When a reason was not written down at the time, the entry says so.
 
 **Cloudflare Workers + Vectorize + OpenAI API** (Apr 2026, `864bc9a`, branch
 `openAI-api`). This was the first MVP: a Worker (`cloudflare_demo/`) with Vectorize for
-retrieval and OpenAI for embeddings and generation. Replaced by a fully local stack in
+retrieval and OpenAI for embeddings and generation. Replaced by local models in
 `cd9987e` (12 May). The commit gives no reason. The team's understanding was that
 client documents should not leave infrastructure we control, and that per-call API
-costs were a concern. *Team: please confirm.*
+costs were a concern. The final motive remains unconfirmed; see
+[the decision record](decisions/0001-local-models.md).
 
 **Amazon S3 Vectors, then Amazon OpenSearch Service** (30 Apr – 22 May, `bbd59c7`,
 `d08bc2e`). Both were built and run side by side, along with Pinecone (`3b2ab77`).
-On 22 May only Pinecone was kept (`43e9719`). The reason is not recorded. *Team:
-please fill in.*
+On 22 May only Pinecone was kept (`43e9719`). The rejection rationale is not
+recorded; see [the pending decision evidence](decisions/0002-pinecone.md).
 
 **ChromaDB** (May–Aug). Local vector store from the "fully local" migration. Replaced
 by Pinecone and removed from requirements in `bc9d428`, because it was unused and
@@ -25,8 +26,8 @@ pulled in `onnxruntime`. A 38 MB `chroma.sqlite3` was committed to git for a whi
 a VCN and compute instance, with cloud-init that installs Ollama. Lessons learned:
 `VM.Standard.E2.4` is a paid shape whose service limit drops to zero when the free
 trial ends, and OCI reports that as a misleading `404 NotAuthorizedOrNotFound`. The
-first push failed because ~240 MB of Terraform provider binaries and credentials were
-committed. The project then moved to EC2 (see [ADR 0007](decisions/0007-hosting-ec2.md)).
+first push failed because roughly 240 MB of Terraform provider binaries were
+included. The project then moved to EC2 (see [ADR 0007](decisions/0007-hosting-ec2.md)).
 
 ## Models
 
@@ -48,7 +49,8 @@ questions: 0/5 correct with it off, 5/5 with it on. **Lesson: don't tune on one
 question.** It is now on by default, and `OLLAMA_THINK=false` turns it off.
 
 **HyDE (hypothetical document embeddings)** (`2dc4431`, May). Added with reranking and
-keyword search, and no longer in the pipeline. *Team: why was it dropped?*
+keyword search, and no longer in the pipeline. The removal rationale still needs
+team evidence in [the handover register](handover-status.md).
 
 ## Product and UX
 
@@ -63,7 +65,8 @@ document had the same placeholder date, so most ranges returned nothing.
 
 **User/fund selection UI** (PR #3 `Mark-UserFunds`, merged and reverted the same day,
 `e8424fa`). The revert also touched the committed `chroma.sqlite3` and `.pyc` files.
-The feature came back in a later merge. *Team: confirm why it was reverted.*
+The feature came back in a later merge. The revert rationale still needs team
+evidence in [the handover register](handover-status.md).
 
 **Delete-document JSON list** (branch `Mark-DeleteDocs`, `cb1d872`, untested, never
 merged). Superseded by the `Document` model, which stores Pinecone IDs (`72e824d`).
@@ -90,8 +93,10 @@ header and layout chunking.
 **`chunking.py` module.** Lost a name collision with main's `chunking/` package during
 the 23 Sep merge (`dddcc5d`). The package was kept.
 
-**OCR ensemble (PaddleOCR + `SemanticChunker` + LLM text alignment)**. Commented out.
-Its output was thrown away anyway (`a68e328`).
+**OCR ensemble (PaddleOCR + `SemanticChunker` + LLM text alignment)**. The handover
+path removes the unused SemanticChunker dependency and returns OCR text directly
+when cleanup is disabled. Ollama imports are deferred to inference paths. Historical
+ensemble changes are in `a68e328`; current regression checks cover import-light OCR.
 
 **OCR on the client VM** (`4bcdec8`). PP-StructureV3 crashes in paddlepaddle 3.3.1's
 oneDNN kernel. The vision fallback (`qwen3-vl:2b`) needs about 5.4 GB resident, and the

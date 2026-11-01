@@ -3,8 +3,8 @@
 **Status:** Accepted (`e3af36c`, `18e6cba`)
 
 ## Context
-Answers are generated on CPU. Measured with the roughly 1,900-token context the app
-sends:
+Historical experiments generated answers on CPU with the roughly 1,900-token context the app
+sent. These timings are not a current deployment benchmark:
 
 | Model | Thinking | Time |
 | --- | --- | --- |

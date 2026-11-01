@@ -12,8 +12,8 @@ which dense embeddings match poorly.
 - Rerank them with a cross-encoder in a single batched forward pass and keep the top 5.
 - An earlier version reranked with qwen3 in 30–40 sequential LLM calls, which was far
   too slow.
-- When a question has no fitted BM25 term, fall back to an empty sparse vector.
-  Otherwise Pinecone rejects the query (`dddcc5d`).
+- When a question has no fitted BM25 term, omit the sparse vector and use
+  dense-only retrieval. Passing empty sparse indices would make Pinecone reject it (`dddcc5d`).
 
 ## Consequences
 - BM25 must be refitted on the whole corpus with `ingest.py`. Uploads reuse the fitted

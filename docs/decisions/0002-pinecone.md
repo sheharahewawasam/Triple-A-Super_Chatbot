@@ -12,11 +12,12 @@ Keep Pinecone only. It supports hybrid search (dense and sparse vectors in one q
 and metadata filters, which [0003](0003-hybrid-retrieval-rerank.md) and the per-fund
 access filter both need.
 
-*Team: record why S3 Vectors and OpenSearch lost (cost, setup effort, missing sparse
-vectors?).*
+The reason S3 Vectors and OpenSearch were rejected is not established by the
+implementation. Team confirmation remains in [the handover register](../handover-status.md).
 
 ## Consequences
-- The app cannot start without a valid `PINECONE_API_KEY`.
+- Normal application startup requires authorised Pinecone access and its configured
+  index. `RAG_OFFLINE=1` deliberately skips these resources for unit tests only.
 - Access control relies on exact-match metadata filters (`fund_name`, `owner`). A
   document ingested with a `fund_name` that no advisor holds can't be reached by
   anyone. This happened with the TestData funds (`c221666`).

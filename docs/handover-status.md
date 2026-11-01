@@ -2,6 +2,9 @@
 
 Updated 1 November 2026. Joint coordination: Fred and Shehara.
 Do not substitute code preparation for account-side completion or live evidence.
+Item numbers preserve the original work-list references; this is not a count of
+the rows displayed below. Current documentation has been reconciled against the
+handover implementation; unresolved owner/team facts remain explicitly pending.
 
 | Item | Status and evidence / next action |
 |---|---|

@@ -6,17 +6,18 @@
 ## Context
 The first deployment was an OCI VM provisioned with Terraform (`ea819dd`, `4338568`).
 The paid shape `VM.Standard.E2.4` became unusable when the trial ended, and OCI
-reported that as a misleading 404. *Team: record why the move to EC2 happened (trial
-expiry, client preference?).*
+reported that as a misleading 404. The team's final reason for choosing EC2 and
+the decision owner remain unconfirmed; see [the handover register](../handover-status.md).
 
 ## Decision
-- One Amazon Linux 2023 EC2 instance (about 7.8 GB RAM). gunicorn runs under systemd,
-  bound to `127.0.0.1:8000`, behind nginx. Port 8000 is closed in the security group.
+- Target: one Amazon Linux 2023 EC2 instance, with Gunicorn managed by systemd
+  on `127.0.0.1:8000` behind nginx. Application port 8000 must be restricted.
+  Current instance shape/memory and effective network controls need operator verification.
 - TLS from Let's Encrypt for `triple-a-chatbot.duckdns.org`. Let's Encrypt won't issue
   a certificate for a bare IP or an `amazonaws.com` name, so a free DuckDNS name was
   used.
-- DuckDNS is refreshed by a systemd timer (Amazon Linux 2023 has no cron), because the
-  public IP is not an Elastic IP and changes on stop/start.
+- Use a systemd timer to refresh DuckDNS when the host uses a changing public IP.
+  The installed refresh schedule and Elastic IP allocation are unverified.
 - Port 80 redirects to HTTPS unconditionally.
 
 ## Consequences

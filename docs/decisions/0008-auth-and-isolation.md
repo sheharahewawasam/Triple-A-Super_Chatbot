@@ -21,8 +21,11 @@ signed-in adviser could read any fund's deeds by naming it.
   [known-issues.md](../known-issues.md)), plus a separate login throttle.
 
 ## Consequences
-- Accounts are created in migration `0006` with the placeholder password `admin`.
+- Fresh installations create accounts with unusable passwords in migration `0006`;
+  provision unique passwords explicitly. Existing migrated databases are unchanged
+  and need per-deployment password updates.
 - Migrations `0003`/`0004` exist because two branches each added advisors (TestAdvisor
   for the TestData funds, and two advisers from main), and they were reconciled in the
   23 Sep merge.
-- Tests in `rag_api/tests.py` enforce isolation. Keep them passing.
+- The 37-test suite spans `rag_api/tests.py` and `rag_api/test_handover.py`.
+  Original access/security tests and new date/OCR/seed checks pass; keep them passing.

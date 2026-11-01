@@ -32,7 +32,7 @@ and a single-page UI (`mvp_demo/index.html`) with per-adviser sign-in.
 
 ### 1. Install
 
-    git clone https://github.com/sheharahewawasam/Triple-A-Super_Chatbot.git
+    git clone --branch handover/fit-4002-chatbot https://github.com/sheharahewawasam/Triple-A-Super_Chatbot.git
     cd Triple-A-Super_Chatbot/mvp_demo
     python3.12 -m venv .venv
     source .venv/bin/activate              # Windows: .venv\Scripts\activate
@@ -76,7 +76,8 @@ in [the security handover checklist](docs/handover-status.md).
 
     python manage.py runserver
 
-Open http://localhost:8000, sign in, and choose an adviser and fund to chat.
+Open http://localhost:8000, sign in, and select funds from those assigned to the
+account. Identity comes from sign-in; there is no adviser-impersonation selector.
 
 ### Troubleshooting
 
@@ -97,16 +98,24 @@ need PaddleOCR:
     python -m pip install "paddleocr[all]"
     python -m pip install pymupdf ollama
 
-Documents can also be uploaded through the app when `DOCUMENT_UPLOADS_ENABLED` is set.
+Uploads are enabled by default; `DOCUMENT_UPLOADS_ENABLED=false` makes the server
+read-only. OCR defaults to enabled but can be disabled with `OCR_ENABLED=false`;
+install native OCR packages only on a suitably provisioned host. Model names can
+be set with `OLLAMA_VLM_MODEL` and `OLLAMA_CLEANUP_MODEL`.
 
 ## Tests
 
 ### Unit tests
 
-    cd mvp_demo && python manage.py test rag_api
+    cd mvp_demo   # skip this if already in mvp_demo
+    RAG_OFFLINE=1 python manage.py test rag_api -v 2
 
-`rag_api/tests.py` covers sign-in, fund access filters, query-cache isolation between
-advisers and audit-log path safety. Run it after any change to the code, and after
+On Windows PowerShell, set `$env:RAG_OFFLINE="1"` before the test command.
+Offline mode skips Pinecone and BGE loading; it must not be used for live evaluation.
+
+The 37 tests in `rag_api/tests.py` and `rag_api/test_handover.py` cover sign-in,
+fund/ownership access, cache scope, throttling, citation grants, dates, seed passwords
+and optional OCR imports. Run it after any change to the code, and after
 bumping a pin in `requirements.txt`.
 
 ### Evaluation scripts
@@ -116,7 +125,7 @@ These run against real data, so they aren't part of `manage.py test`. Run each o
 
 | Script | Checks | Needs |
 |---|---|---|
-| `python eval_retrieval.py [--verbose]` | Retrieval recall: whether the fact that answers each adviser question reaches the model | The Pinecone index populated by `ingest.py` |
+| `python eval_retrieval.py --verbose --require 8` | Retrieval recall: whether the fact that answers each adviser question reaches the model | The Pinecone index populated by `ingest.py` |
 | `python -u Grader.py` | End-to-end answer quality, graded by an LLM; writes `currentVersionEval.txt` | The Pinecone index, Ollama running, and `pip install ollama` |
 | `python chunk_structure_metrics.py --all-pdfs` | Chunk structure: headings found, section sizes, TOC filtering | PDFs in `../pdfs/`; reports go to `test_chunking_output/reports/` |
 | `python validate_evaluation_dataset.py` | That each excerpt in `chunk_evaluation_dataset.json` matches the extracted text exactly | `../pdfs/SIS Act -1.pdf` |

@@ -1,8 +1,8 @@
 # Project history
 
 A summary of the old repository, <https://github.com/sheharahewawasam/FIT-4002-CHATBOT>.
-Keep that repository archived (read-only) and do not delete it. It is the only record
-of the project development history.
+The original repository is private, verified on 1 November 2026, and is not
+archived. Preserve it as the development-history reference; do not delete it.
 
 ## Timeline (2026)
 
@@ -12,7 +12,7 @@ of the project development history.
 | 26 Apr | Answer and embedding models moved to local Ollama | `6a35d6a` |
 | 30 Apr – 4 May | S3 Vectors and OpenSearch tried. Reranking, HyDE and keyword search added. pypdf replaced by pdfplumber | `bbd59c7`, `2dc4431`, `d08bc2e` |
 | 5 May – 4 Jun | PaddleOCR pipeline developed (merged in PR #2) | `ab202fc` … `5ff9fdb` |
-| 12 May | Fully local stack: BGE embeddings, cross-encoder reranker, answer cache, front end served by Django (PR #1) | `cd9987e` |
+| 12 May | Local model pipeline: BGE embeddings, cross-encoder reranker, answer cache, front end served by Django (PR #1) | `cd9987e` |
 | 22 May | Pinecone chosen as the only vector store | `43e9719` |
 | 15 Jun | First VM deployment (OCI) running qwen3:1.7b | `ea819dd` |
 | 10–16 Aug | User/fund UI (reverted, then re-merged), RAG metrics grader, header-based chunking, real filenames in citations, audit log | `e8424fa`, `0d4920a`, `947ea11`, `80a34de`, `b770a2f` |
@@ -28,8 +28,9 @@ of the project development history.
 
 ## Branch map
 
-`main` stopped moving on 22 September. The newest work is on the two branches below,
-**which were never merged back into `main`**.
+The branch map below describes the original repository at handover, not the
+current handover repository. Its original `main` stopped moving on 22 September;
+the later feature work had not been merged into that original `main`.
 
 | Branch | State | Contents |
 | --- | --- | --- |
@@ -43,9 +44,11 @@ of the project development history.
 | `Jun_edits`, `Shehara-Bubble-UI` | stale | Small edits only |
 | `Mark-AuditLog`, `Mark-Rag-Metrics`, `Mark-UserFunds`, `Mark-docs`, `weihom`, `Shehara-ollama_debugged` | merged | — |
 
-This repository's `views.py` matches `a52c198` and its `ocr_solution.py` matches old
-`main`, so it is behind `feature/account-based-access`. See
-[known-issues.md](known-issues.md).
+On 1 November 2026 the handover branch restored the missing account-access fixes,
+OCR rewrite/logging and regression tests. The original source reference is
+`b269f317ca5396fedd91843ccaf012b765bddc0b`, with logging adapted from `967d1d4`.
+See [known issues](known-issues.md) and [handover status](handover-status.md) for
+current implementation and verification; this timeline is historical evidence.
 
 ## Contributors
 
