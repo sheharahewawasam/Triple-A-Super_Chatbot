@@ -7,8 +7,9 @@ The old repository was **public** and tracked `mvp_demo/.env` from its first com
 exposed an **OpenAI API key** (`sk-proj…`) and a **Cloudflare API token** (`cfut_…`).
 Both were untracked on 14 Sep (`dfbe7d0`), but they remain in history on 17 branches.
 
-- Treat both as compromised. Revoke them at OpenAI and Cloudflare if that hasn't been
-  done.
+- Shehara confirmed on 1 November 2026 that the leaked OpenAI key and Cloudflare
+  token were deleted. This is owner-reported completion; provider dashboards were
+  not independently inspected. Treat the historical values as compromised.
 - Check the Pinecone key in the same way. A key that was ever committed should be
   rotated.
 - Make the old repository private or archive it. Deleting files does not remove them
@@ -83,7 +84,9 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
 A heuristic scan of credential-related blobs in fetched original histories confirmed
 OpenAI- and Cloudflare-shaped values without printing them. No Pinecone key
 candidate was found in that limited scan; this is not proof that none was ever
-committed. Account-side revocation remains unverified until the owner completes it.
+committed. Shehara subsequently confirmed deleting the leaked OpenAI key and
+Cloudflare token on 1 November 2026. Account-side completion is owner-confirmed,
+not independently verified through provider dashboards.
 The old repository was made PRIVATE and verified through GitHub on 1 November 2026;
 its files and history are preserved. Archiving alone would leave public history
 readable. No repository was deleted; previously downloaded copies remain outside

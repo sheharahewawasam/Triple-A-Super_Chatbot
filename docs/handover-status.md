@@ -5,7 +5,7 @@ Do not substitute code preparation for account-side completion or live evidence.
 
 | Item | Status and evidence / next action |
 |---|---|
-| 1. OpenAI and Cloudflare revocation | Owner action pending; Shehara deferred credential changes on 1 November 2026. Historical credential-shaped values confirmed without displaying them. Repository privacy does not invalidate previously copied keys; revocation remains required. |
+| 1. OpenAI and Cloudflare revocation | Completed per owner confirmation: Shehara reported deleting the leaked OpenAI key and Cloudflare token on 1 November 2026. Recorded as owner-confirmed, not independently verified through provider dashboards. No secret values retained in this record. |
 | 2. Pinecone key | No candidate in the limited configuration-blob scan. Full history/account review and rotation if exposed remain pending. Never use a historical leaked key for testing. |
 | 3. Old repo visibility | Completed: FIT-4002-CHATBOT changed to PRIVATE and verified through GitHub on 1 November 2026. Not deleted or archived; files/history preserved. Previously fetched copies cannot be recalled. |
 | 4. Adviser passwords | New installs now create unusable seed passwords. Existing databases are unchanged; rotate each account on every deployment and record completion privately. |
