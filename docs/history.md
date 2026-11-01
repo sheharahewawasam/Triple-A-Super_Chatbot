@@ -2,8 +2,7 @@
 
 A summary of the old repository, <https://github.com/sheharahewawasam/FIT-4002-CHATBOT>.
 Keep that repository archived (read-only) and do not delete it. It is the only record
-of this history, but it also contains leaked credentials (see
-[security-and-data.md](security-and-data.md)).
+of the project development history.
 
 ## Timeline (2026)
 
@@ -21,7 +20,7 @@ of this history, but it also contains leaked credentials (see
 | 3 Sep | OCI Terraform. Database-backed advisors and funds. Per-user upload and ingestion | `4338568`, `72e824d` |
 | 7 Sep | Path traversal and XSS fixed. First tests | `1f44082` |
 | 9 Sep | Deployment hardening, model and thinking tuning, TOC filter fix (+2,137 vectors), cache scoped to each asker | `bc9d428`, `18e6cba`, `55973e2` |
-| 14–16 Sep | Leaked `.env` untracked. Streaming added, then removed | `dfbe7d0`, `c221666`, `19da90f` |
+| 14–16 Sep | Streaming added, then removed | `c221666`, `19da90f` |
 | 23 Sep | Big merge of main into the feature branch. Sign-in and authorisation. TLS live on `triple-a-chatbot.duckdns.org` (EC2) | `dddcc5d`, `a52c198`, `62a62d0` |
 | 25–28 Sep | Rate-limit fix, signed citation links, uploads re-enabled | `462cee2`, `7c39817`, `7655e3b` |
 | 27 Sep – 3 Oct | Layout-aware chunking, VLM fallback for OCR, OCR made local-only | `6634f9d`, `c3d288f`, `4bcdec8` |

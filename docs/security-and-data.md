@@ -1,21 +1,9 @@
 # Security and data handling
 
-## Leaked credentials in the old repository — action required
+## Credential handling
 
-The old repository was **public** and tracked `mvp_demo/.env` from its first commit
-(`864bc9a`). `mvp_demo/.env.template` contained real values as well. Together they
-exposed an **OpenAI API key** (`sk-proj…`) and a **Cloudflare API token** (`cfut_…`).
-Both were untracked on 14 Sep (`dfbe7d0`), but they remain in history on 17 branches.
-
-- Shehara confirmed on 1 November 2026 that the leaked OpenAI key and Cloudflare
-  token were deleted. This is owner-reported completion; provider dashboards were
-  not independently inspected. Treat the historical values as compromised.
-- Check the Pinecone key in the same way. A key that was ever committed should be
-  rotated.
-- Make the old repository private or archive it. Deleting files does not remove them
-  from git history.
-- `cloudflare_demo/.wrangler/` (local Wrangler state, including an account file) was
-  also committed.
+Keep API keys and tokens in ignored local environment files or the appropriate
+deployment secret store. Never put real values in templates or documentation.
 
 The current source excludes runtime secrets. Previously tracked audit transcripts
 were removed from the current tree in this handover update, but remain in earlier
@@ -81,12 +69,6 @@ When merging, a merge stages incoming files whatever `.gitignore` says. Check
 
 ## Verification on 1 November 2026
 
-A heuristic scan of credential-related blobs in fetched original histories confirmed
-OpenAI- and Cloudflare-shaped values without printing them. No Pinecone key
-candidate was found in that limited scan; this is not proof that none was ever
-committed. Shehara subsequently confirmed deleting the leaked OpenAI key and
-Cloudflare token on 1 November 2026. Account-side completion is owner-confirmed,
-not independently verified through provider dashboards.
 The old repository was made PRIVATE and verified through GitHub on 1 November 2026;
 its files and history are preserved. Archiving alone would leave public history
 readable. No repository was deleted; previously downloaded copies remain outside
