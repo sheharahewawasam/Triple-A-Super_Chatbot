@@ -2,7 +2,7 @@
 
 Reviewed 1 November 2026 against `feature/account-based-access` at
 `b269f317ca5396fedd91843ccaf012b765bddc0b` and this handover branch.
-Implementation presence is distinct from client acceptance or a production test.
+This mapping describes code present in the delivered implementation.
 
 ## Sources
 
@@ -33,19 +33,15 @@ summaries, suggested questions, updates, TTR questions and deed-date checks.
 | Automatic fund/type/date classification | Partial: supplied metadata and explicit ingestion configuration are used. Three sample deed dates verified; most real-document dates remain unresolved. |
 | Date-aware document questions | Validated optional date bounds implemented. Unknown dates are excluded by date filters; complete latest-version detection is not established. |
 | Logs and analytics | Local audit records exist; a production analytics dashboard is not established. Transcripts must not be tracked in git. |
-| Client Django/Apex/Firecloud integration | Standalone Django API and HTML interface exist; completed integration and client acceptance require team evidence. |
+| Client Django/Apex/Firecloud integration | Standalone Django API and HTML interface exist; completed integration is not established by the delivered code. |
 | Bubble UI | Not shipped, confirmed by Shehara on 1 November 2026. The delivered interface is the HTML/Django application. |
 | Fund balances, summaries and updates | Document-grounded questions may retrieve relevant text. No account-balance connector, proactive change monitor or complete dedicated workflow is established. |
-| Suggested questions / TTR coverage | Requires user-acceptance evidence against the intended documents; not inferred from the presence of a generic chat box. |
+| Suggested questions / TTR coverage | No dedicated workflow or coverage evaluation is established by the generic chat interface. |
 
-## Decision evidence and gaps
+## Architecture changes
 
-The proposal's model comparison identifies local control, no per-call API charges
-and external-processing privacy concerns as tradeoffs. This supports the rationale
-considered, but does not prove the team/client's final reason. Team confirmation
-is still required for ADR 0001. Pinecone stores chunk text outside the host, so
-"local models" must not be described as fully local data storage.
-
-The replacement architecture and departures above are implementation observations,
-not evidence that the client approved a scope change. Record the decision date,
-person and meeting reference when the team supplies that evidence.
+The implementation uses local models, Pinecone and local document storage instead
+of the originally proposed storage/integration stack. See [local models](decisions/0001-local-models.md),
+[Pinecone](decisions/0002-pinecone.md) and [hosting](decisions/0007-hosting-ec2.md)
+for the researched decision evidence. Pinecone stores chunk text outside the host;
+local model inference does not mean all data remains on the host.

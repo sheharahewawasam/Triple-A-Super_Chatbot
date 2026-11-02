@@ -6,8 +6,13 @@
 ## Context
 The first deployment was an OCI VM provisioned with Terraform (`ea819dd`, `4338568`).
 The paid shape `VM.Standard.E2.4` became unusable when the trial ended, and OCI
-reported that as a misleading 404. The team's final reason for choosing EC2 and
-the decision owner remain unconfirmed; see [the handover register](../handover-status.md).
+reported that as a misleading 404. Research on 2 November 2026 found that
+`4338568` explicitly documents this limit and changes the OCI configuration to
+`VM.Standard.A1.Flex`. Later, `bc9d428` identifies the EC2 systemd unit as the
+one running on the client host. The supported explanation is that the paid OCI
+shape could not continue under the expired trial and EC2 became the deployment
+target. The history does not prove this was the sole reason for choosing AWS;
+indeed, an alternative OCI shape was attempted first.
 
 ## Decision
 - Target: one Amazon Linux 2023 EC2 instance, with Gunicorn managed by systemd
@@ -25,8 +30,7 @@ the decision owner remain unconfirmed; see [the handover register](../handover-s
 Source update, 1 November 2026: `deploy/chatbot.service` now binds to loopback to
 match this design. This does not change the installed VM unit: the operator must
 apply it and verify listener/firewall/nginx configuration before marking production
-isolation complete. Instance ID, region, shape and effective runtime remain pending
-owner confirmation; historical memory figures are not a current inventory.
+isolation complete. Historical memory figures are not a current inventory.
 - A single host with no redundancy. A stop/start changes the IP until DuckDNS updates.
 - `DJANGO_TRUST_PROXY_PROTO` is safe only while nginx is the only thing that can reach
   gunicorn.
@@ -34,3 +38,10 @@ owner confirmation; historical memory figures are not a current inventory.
   after a rebuild.
 - The OCI Terraform was not carried into this repo. It is in the old repo under
   `oci-infra/`.
+
+## Research sources
+
+Repository history reviewed on 2 November 2026:
+
+- [Original commit `4338568`](https://github.com/sheharahewawasam/FIT-4002-CHATBOT/commit/4338568a135d2843265580c1ca272c14bac2f4c0)
+- [Original commit `bc9d428`](https://github.com/sheharahewawasam/FIT-4002-CHATBOT/commit/bc9d4280ec8bb8a5b5ad40d35a8f2c2d21e45c29)

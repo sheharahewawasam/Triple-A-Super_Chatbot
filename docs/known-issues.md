@@ -12,7 +12,6 @@ Evaluation cases, OCR checks and fixtures are restored. Existing retrieval,
 chunk-structure and improved grader scripts are retained. The live recall rerun
 passed on 1 November 2026 with recall@5=8/10 and recall@60=8/10; see
 [the evaluation record](evaluation.md).
-See [handover-status.md](handover-status.md) for incomplete security and team work.
 
 ## 2. Known limitations (unfixed in either repo)
 

@@ -69,8 +69,8 @@ Provision a unique password for every account before sign-in:
     python manage.py createsuperuser
 
 Existing databases that previously used the shared placeholder are not rotated by
-this source change. Rotate passwords on **each** deployment and record completion
-in [the security handover checklist](docs/handover-status.md).
+this source change. Rotate passwords on **each** deployment; see
+[deployment security notes](docs/security-and-data.md#deployment-security-notes).
 
 ### 4. Run
 
@@ -155,8 +155,8 @@ whole team's:
 
 ## Handover status and verification
 
-See [the task register](docs/handover-status.md), [scope and delivery](docs/scope-and-delivery.md),
-[document dates](docs/document-date-register.json) and [backup procedure](docs/backup-and-restore.md).
+See [scope and delivery](docs/scope-and-delivery.md),
+[document dates](docs/document-date-register.json) and [data handling](docs/security-and-data.md).
 The original source reference is `b269f317ca5396fedd91843ccaf012b765bddc0b`;
 OCR logging is adapted from `967d1d4`. The grader already in this branch is retained
 because it queries once per question and grades retrieved context rather than

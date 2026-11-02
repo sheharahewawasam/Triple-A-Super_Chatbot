@@ -74,3 +74,31 @@ The old repository was made PRIVATE and verified through GitHub on 1 November 20
 its files and history are preserved. Archiving alone would leave public history
 readable. No repository was deleted; previously downloaded copies remain outside
 the visibility change's control.
+
+## Client credentials
+
+The client already holds its API keys and will replace the application credentials
+with its own, confirmed by Shehara on 2 November 2026. Supply them through the
+configured environment or deployment secret store, never through source control.
+
+## Backup and rebuild guidance
+
+Before replacing a host, preserve source PDFs in `/opt/chatbot/documents` and
+`SOURCE_DOCUMENT_DIRS`, uploads under `MEDIA_ROOT`, a consistent SQLite backup,
+the fitted BM25 encoder and index/schema configuration. Use encrypted restricted
+storage and keep recovery credentials separately. After a rebuild, restore source
+paths and check that authorised citation links can open the PDFs.
+
+## Document-date verification
+
+Use [document-date-register.json](document-date-register.json). Verify the operative
+or execution date in each original and record the page/section; do not use file
+modification times, tax years or repeated template dates as deed dates. Leave an
+unknown date null. Amendments and consolidated deeds may have distinct dates.
+Changing `ingest.py` does not update existing Pinecone metadata: perform an
+authorised re-ingestion or controlled metadata update and rerun retrieval checks.
+
+Three source texts were checked during this update: Sample Schedule 3 has
+`09/10/2020` (interpreted as 9 October 2020 in the Australian date convention);
+Summers execution schedule explicitly gives `21 January 2012`; Ausis schedule
+gives `27 May 2022`. These are sample deed dates, not a review of every client PDF.

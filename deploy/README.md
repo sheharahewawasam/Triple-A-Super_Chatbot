@@ -4,7 +4,7 @@ Deployment procedure for Amazon Linux 2023, reviewed 1 November 2026.
 The public HTTPS sign-in page and authenticated dashboard were observed; installed
 units, instance inventory, network controls and renewal jobs were not inspected.
 Use the operator-confirmed hostname instead of historical IP addresses.
-See [handover status](../docs/handover-status.md) for unverified operational facts.
+See [known issues](../docs/known-issues.md) for implementation limitations.
 
 Layout on the VM:
 
@@ -90,7 +90,7 @@ Place authorised source PDFs outside the checkout, normally in
 `/opt/chatbot/documents`, and set `SOURCE_DOCUMENT_DIRS` accordingly. The application
 serves citations through signed grants at `/api/source/`; a working link requires
 the corresponding local PDF. Never expose the source directory as public static files.
-Use [backup and restore](../docs/backup-and-restore.md) before replacing a host.
+Use [backup and rebuild guidance](../docs/security-and-data.md#backup-and-rebuild-guidance) before replacing a host.
 
 Use the configured HTTPS hostname, normally `triple-a-chatbot.duckdns.org`.
 For authorised diagnostics through SSH, forward to the loopback application port:

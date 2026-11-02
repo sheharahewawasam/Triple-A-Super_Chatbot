@@ -8,15 +8,15 @@ first. When a reason was not written down at the time, the entry says so.
 **Cloudflare Workers + Vectorize + OpenAI API** (Apr 2026, `864bc9a`, branch
 `openAI-api`). This was the first MVP: a Worker (`cloudflare_demo/`) with Vectorize for
 retrieval and OpenAI for embeddings and generation. Replaced by local models in
-`cd9987e` (12 May). The commit gives no reason. The team's understanding was that
-client documents should not leave infrastructure we control, and that per-call API
-costs were a concern. The final motive remains unconfirmed; see
-[the decision record](decisions/0001-local-models.md).
+`cd9987e` (12 May). The proposal documents privacy/control and per-call cost tradeoffs; the commit
+also explicitly optimises embedding/reranking calls. See the researched
+[decision record](decisions/0001-local-models.md) for the evidence and its limits.
 
 **Amazon S3 Vectors, then Amazon OpenSearch Service** (30 Apr – 22 May, `bbd59c7`,
 `d08bc2e`). Both were built and run side by side, along with Pinecone (`3b2ab77`).
-On 22 May only Pinecone was kept (`43e9719`). The rejection rationale is not
-recorded; see [the pending decision evidence](decisions/0002-pinecone.md).
+On 22 May only Pinecone was kept (`43e9719`), removing parallel backend code.
+See [ADR 0002](decisions/0002-pinecone.md) for the supported technical basis and
+why a cost/quality advantage cannot be inferred.
 
 **ChromaDB** (May–Aug). Local vector store from the "fully local" migration. Replaced
 by Pinecone and removed from requirements in `bc9d428`, because it was unused and
@@ -49,8 +49,12 @@ questions: 0/5 correct with it off, 5/5 with it on. **Lesson: don't tune on one
 question.** It is now on by default, and `OLLAMA_THINK=false` turns it off.
 
 **HyDE (hypothetical document embeddings)** (`2dc4431`, May). Added with reranking and
-keyword search, and no longer in the pipeline. The removal rationale still needs
-team evidence in [the handover register](handover-status.md).
+keyword search. Research found `cd9987e` removes `query_rewriter_hyde` and
+embeds the original user question directly before retrieval and batch reranking;
+`f47ab7f` also removes the expansion path in the parallel backend rewrite.
+This eliminates an extra generation/expansion stage. Lower latency and a simpler
+pipeline are plausible effects, but neither commit supplies a HyDE-specific
+benchmark or explicit removal rationale. No accuracy improvement is claimed.
 
 ## Product and UX
 
@@ -65,8 +69,11 @@ document had the same placeholder date, so most ranges returned nothing.
 
 **User/fund selection UI** (PR #3 `Mark-UserFunds`, merged and reverted the same day,
 `e8424fa`). The revert also touched the committed `chroma.sqlite3` and `.pyc` files.
-The feature came back in a later merge. The revert rationale still needs team
-evidence in [the handover register](handover-status.md).
+The feature came back in a later merge. Research found the revert message is
+only `Revert "Mark user funds"`; it removes the selector UI, routes and user module
+and changes database/bytecode artifacts. That establishes a rollback, not its
+cause. There is no recorded basis to claim client rejection or a particular bug.
+The current authenticated fund-grant model supersedes that early selector.
 
 **Delete-document JSON list** (branch `Mark-DeleteDocs`, `cb1d872`, untested, never
 merged). Superseded by the `Document` model, which stores Pinecone IDs (`72e824d`).
@@ -105,3 +112,11 @@ local-only feature for now.
 
 **LLM cleanup pass on OCR output.** Took minutes per chunk on CPU, for tidier text that
 retrieval does not need. Disabled with `cleanup=False` (`0efdf4a`).
+
+## Research sources
+
+Repository history reviewed on 2 November 2026:
+
+- [Original commit `cd9987e`](https://github.com/sheharahewawasam/FIT-4002-CHATBOT/commit/cd9987e70b320e2101ac1628b2eb776c9dd26e0e)
+- [Original commit `f47ab7f`](https://github.com/sheharahewawasam/FIT-4002-CHATBOT/commit/f47ab7fad0ecc579e9fae15916aba4c4f9adc56b)
+- [Original commit `e8424fa`](https://github.com/sheharahewawasam/FIT-4002-CHATBOT/commit/e8424fa20970974fe4189889fc7a7b1324739dda)

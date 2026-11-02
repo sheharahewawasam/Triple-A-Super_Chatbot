@@ -18,9 +18,12 @@ Option 3. `BAAI/bge-base-en-v1.5` embeddings and the `BAAI/bge-reranker-base`
 cross-encoder run in-process, loaded once in `rag_api/resources.py`. Answers come from
 Ollama.
 
-The reasoning was not written down at the time. The team's understanding is that it was
-data confidentiality and cost. The final motive/client requirement is still
-awaiting team confirmation in [the handover register](../handover-status.md).
+Research on 2 November 2026 found two supported reasons for this architecture:
+local control with no per-call model API charges (proposal section 9), and CPU
+pipeline efficiency (commit `cd9987e`). That commit replaced 30–40 sequential
+reranker LLM calls with a batched cross-encoder and replaced embedding HTTP calls
+with an in-process model. Confidentiality and cost are documented proposal
+tradeoffs; the commit does not establish a client mandate or a single final motive.
 
 Evidence recovered on 1 November 2026: section 9 of the proposal compares local
 control/no per-call API charges with OpenAI's external processing/privacy concerns
@@ -35,3 +38,9 @@ confirm the final decision motive or a client-imposed requirement. See
 - The vector store (Pinecone) is still a hosted service, but it stores chunk text as
   metadata, so document text does leave the host. Bear that in mind if confidentiality
   was the reason for this decision.
+
+## Research sources
+
+Repository history reviewed on 2 November 2026:
+
+- [Original commit `cd9987e`](https://github.com/sheharahewawasam/FIT-4002-CHATBOT/commit/cd9987e70b320e2101ac1628b2eb776c9dd26e0e)

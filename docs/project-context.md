@@ -1,8 +1,8 @@
 # Project context
 
-Reviewed 1 November 2026. Current implementation: `handover/fit-4002-chatbot`;
+Reviewed 2 November 2026. Current implementation: `handover/fit-4002-chatbot`;
 [draft PR #1](https://github.com/sheharahewawasam/Triple-A-Super_Chatbot/pull/1)
-targets `main`. Refer to [handover status](handover-status.md) for remaining work.
+targets `main`. See [known issues](known-issues.md) for implementation limitations.
 
 ## Purpose and current system
 
@@ -21,7 +21,7 @@ owner-upload clause. Signed citation links serve PDFs through the application.
 
 - Confidential PDFs, logs and environment files require restricted storage outside
   source control. The proposal discusses privacy and cost tradeoffs for local
-  models; the final motivation and any client-imposed requirement remain unconfirmed.
+  models; see [ADR 0001](decisions/0001-local-models.md) for the evidence and its limits.
 - Local inference is not fully local storage: Pinecone holds chunk text/metadata.
 - CPU/memory constraints influenced the small answer model and batched reranking.
   Historical hardware figures are not a verified current VM inventory.
@@ -38,15 +38,16 @@ The proposal authors are Mark Shim, Shehara Hewawasam, Yiyou (Fred) Xu, Weihom T
 and Jun Ng. Historical contribution areas are in [history.md](history.md).
 Fred and Shehara jointly coordinate the handover documentation.
 
-Still needed from the team: unit supervisor/teaching contact, each client's
-decision responsibilities, and the AWS billing/access owner, DuckDNS owner and
-Pinecone owner with the process for next-team access. Do not put credentials here.
+The unit supervisor is **Prabhash**, confirmed by Shehara on 2 November 2026.
+Shehara also confirmed that the client already holds its API keys and will replace
+the application credentials with its own. Configure these through environment
+files or deployment secret stores; do not record their values in this repository.
 
 ## Scope and delivery
 
 [Scope and delivery](scope-and-delivery.md) summarises the original brief/proposal
 and maps it to the current implementation. It distinguishes implemented features
-from client acceptance and unverified integrations. Bubble UI was not shipped,
+from integrations not established by the delivered code. Bubble UI was not shipped,
 confirmed by Shehara on 1 November 2026; the delivered UI is HTML/Django.
 
 ## Infrastructure and maintenance
@@ -56,9 +57,5 @@ systemd, Ollama, DuckDNS and Let's Encrypt. The public HTTPS sign-in page and
 authenticated dashboard were observed on 1 November 2026. Installed service units,
 certificate renewal, network controls and scheduled jobs were not inspected.
 
-The team still needs to record the EC2 instance ID, region, current shape,
-billing owner, actual Pinecone index name/plan and backup owner/location.
-The configured secrets were sufficient for the successful 8/10 live retrieval
-evaluation; this does not disclose or independently inventory the account plan.
 Use [deployment instructions](../deploy/README.md) and the
-[backup/restore procedure](backup-and-restore.md) for operational handover.
+[data handling guide](security-and-data.md) for operational guidance.

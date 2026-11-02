@@ -47,7 +47,7 @@ the later feature work had not been merged into that original `main`.
 On 1 November 2026 the handover branch restored the missing account-access fixes,
 OCR rewrite/logging and regression tests. The original source reference is
 `b269f317ca5396fedd91843ccaf012b765bddc0b`, with logging adapted from `967d1d4`.
-See [known issues](known-issues.md) and [handover status](handover-status.md) for
+See [known issues](known-issues.md) for
 current implementation and verification; this timeline is historical evidence.
 
 ## Contributors
